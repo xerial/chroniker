@@ -4,7 +4,7 @@ _Chroniker_ is a framework for simplifying your batch job pipelines in Scala
 
 ## Examples
 
-```
+```scala
 import xerial.chroniker._
 
 import sampledb._
