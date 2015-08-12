@@ -36,9 +36,12 @@ Seq("YHOO", "GOOG", "MSFT")).map { company =>
  - Run scheduled queries
  - Retry upon failures
  - Cache intermediate results
- - Resume workflows
+ - Resume workflow
  - Partial workflow executions
  - Sampling display
+    - Interactive mode
+ - Split a large query into small ones
+    - Differential computation
 
  - Windowing for stream queries
 
@@ -51,4 +54,4 @@ Seq("YHOO", "GOOG", "MSFT")).map { company =>
    - Local-only mode
    - Register SQL part to Treasure Data
    - Run complex analysis on local cache
-
+   - UNIX command executor
