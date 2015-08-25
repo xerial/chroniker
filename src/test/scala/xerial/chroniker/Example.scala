@@ -48,9 +48,9 @@ object Example
   def appleStockSQL = sql"SELECT time, close FROM ${nasdaq} where symbol = 'APPL'".as[Nasdaq]
 
   // SELECT time, close FROM nasdaq WHERE symbol = 'APPL' LIMIT 10
-  //appleStock.limit(10).print
+  appleStock.limit(10).print
 
-  //appleStockSQL.limit(5).print
+  appleStockSQL.limit(5).print
 
   // time-column based filtering
   def recentAppleStock(scheduledTime:Schedule) = appleStock.between(scheduledTime, scheduledTime + 1.month)
@@ -69,14 +69,16 @@ object RunnerExample {
 
   //Example.recentAppleStock(today).run(td)
 
-
-
 }
 
 
 class Example extends WordSpec {
+  import Example._
 
   "Example" should {
     println(from(Seq(1, 2, 3)))
+    println(appleStockSQL)
+
+
   }
 }

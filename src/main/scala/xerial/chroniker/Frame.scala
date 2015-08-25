@@ -12,6 +12,9 @@
  * limitations under the License.
  */
 package xerial.chroniker
+import scala.language.experimental.macros
+
+import FrameMacros._
 
 /**
  *
@@ -34,7 +37,7 @@ class Frame[A] {
 
   def between(from:Schedule, to:Schedule) : Frame[A] = null
 
-  def as[A] : Frame[A] = null
+  def as[A] : Frame[A] = macro mAs[A]
 
   def run(implicit executor:Executor) = null
 
@@ -43,6 +46,8 @@ class Frame[A] {
 
 case class InputFrame[A](context:FContext, input:Seq[A]) extends Frame[A]
 case class FrameRef[A](context:FContext) extends Frame[A]
+case class RawSQL(context:FContext, sc:Any, args:Seq[Any]) extends Frame[Any]
+case class CastAs[A](context:FContext, input:Frame[_]) extends Frame[A]
 
 /**
  *
@@ -66,4 +71,29 @@ trait Cond[A]
 case class LimitOp[A](input:Frame[A], rows:Int, offset:Int) extends Frame[A]
 case class FilterOp[A](input:Frame[A], cond:A => Boolean) extends Frame[A]
 
+object SQLHelper {
+
+  def templateString(sc:StringContext) = {
+    val b = new StringBuilder
+    for(p <- sc.parts) {
+      b.append(p)
+      b.append("${}")
+    }
+    b.result()
+  }
+
+
+  private def isFrameType[A](cl: Class[A]): Boolean = classOf[Frame[_]].isAssignableFrom(cl)
+
+  def frameInputs(args:Seq[Any]) = {
+    val b = Seq.newBuilder[Frame[_]]
+    for((a, index) <- args.zipWithIndex) {
+      if(isFrameType(a.getClass)) {
+        b += a.asInstanceOf[Frame[_]]
+      }
+    }
+    b.result
+  }
+
+}
 

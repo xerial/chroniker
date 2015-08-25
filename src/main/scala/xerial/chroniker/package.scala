@@ -19,10 +19,10 @@ import scala.language.experimental.macros
  */
 package object chroniker
 {
+  import FrameMacros._
+
   implicit class SqlContext(val sc:StringContext) extends AnyVal {
-    def sql[T](args:Any*) : Frame[T] = {
-      null
-    }
+    def sql(args:Any*) : RawSQL = macro mSQL
   }
 
   val UNDEFINED = throw new UnsupportedOperationException("undefined")
@@ -32,7 +32,7 @@ package object chroniker
 
   }
 
-  import FrameMacros._
+
 
   def from[A](in:Seq[A]) : InputFrame[A] = macro mNewFrame[A]
 

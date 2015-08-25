@@ -76,15 +76,8 @@ object FrameMacros
       //          reify { None }
       //      }
 
-      val mne = c.literal(methodName)
       val pos = c.enclosingPosition
-
-      val l_line = c.literal(pos.line)
-      val l_pos = c.literal(pos.column)
-      val l_source = c.literal(pos.source.path)
-      reify {
-        FContext(selfCl.splice.getClass, mne.splice, vdTree.splice, parent.splice, l_source.splice, l_line.splice, l_pos.splice)
-      }
+      c.Expr[FContext](q"FContext($selfCl.getClass, $methodName, $vdTree, $parent, ${pos.source.path}, ${pos.line}, ${pos.column})")
     }
 
     // Find a target variable of the operation result by scanning closest ValDefs
@@ -196,31 +189,48 @@ object FrameMacros
         }
       }
     }
-
   }
-
 
   /**
    * Generating a new InputFrame[A] from Seq[A]
    * @return
    */
-  def mNewFrame[A:c.WeakTypeTag](c: Context)(in: c.Expr[Seq[A]]): c.Expr[InputFrame[A]] = {
+  def mNewFrame[A:c.WeakTypeTag](c: Context)(in: c.Expr[Seq[A]]) = {
     import c.universe._
-
-    val helper = new MacroHelper[c.type](c)
-    val fc = helper.createFContext
+    val fc = new MacroHelper[c.type](c).createFContext
     c.Expr[InputFrame[A]](q"InputFrame($fc, $in)")
-    //${fc}, ${in.splice})"
-    //q"InputFrame($fc, $in)"
-//    reify {
-//      {
-//        val _fc = fc.splice
-//        val _in = in.splice
-//        InputFrame(_fc, _in)
-//      }
-//    }
+   }
+
+//  def mSQL(c: Context)(args: c.Expr[Any]*) = {
+//    import c.universe._
+//    val fc = new MacroHelper[c.type](c).createFContext
+//    val sql = "hello"
+//    c.Expr(q"RawSQL($fc, $sql)")
+//  }
+
+  def mSQL(c:Context)(args:c.Expr[Any]*) = {
+    import c.universe._
+    try {
+      val helper = new MacroHelper[c.type](c)
+      val fc = helper.createFContext
+      val argSeq = c.Expr[Seq[Any]](Apply(Select(reify{Seq}.tree, TermName("apply")), args.map(_.tree).toList))
+      println("prefix: " + c.prefix)
+      println(argSeq)
+      c.Expr(q"RawSQL($fc, ..${c.prefix}, Seq(..$args))")
+    }
+    catch {
+      case e:Exception =>
+        e.printStackTrace()
+        throw e
+    }
   }
 
+
+  def mAs[A:c.WeakTypeTag](c: Context) = {
+    import c.universe._
+    val fc = new MacroHelper[c.type](c).createFContext
+    c.Expr[CastAs[A]](q"CastAs($fc, ${c.prefix})")
+  }
 
 
 }
