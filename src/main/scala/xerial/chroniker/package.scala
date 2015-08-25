@@ -32,8 +32,6 @@ package object chroniker
 
   }
 
-
-
   def from[A](in:Seq[A]) : InputFrame[A] = macro mNewFrame[A]
 
 }

@@ -64,7 +64,6 @@ object Example
 }
 
 object RunnerExample {
-
   val td = new TDExecutor
   //Example.recentAppleStock(today).run(td)
 }

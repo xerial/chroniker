@@ -189,6 +189,7 @@ object FrameMacros
         }
       }
     }
+
   }
 
   /**
@@ -197,54 +198,39 @@ object FrameMacros
    */
   def mNewFrame[A:c.WeakTypeTag](c: Context)(in: c.Expr[Seq[A]]) = {
     import c.universe._
-    val fc = new MacroHelper[c.type](c).createFContext
-    c.Expr[InputFrame[A]](q"InputFrame($fc, $in)")
-   }
-
-  def mSQL(c:Context)(args:c.Expr[Any]*) = {
-    import c.universe._
-    try {
-      val helper = new MacroHelper[c.type](c)
-      val fc = helper.createFContext
-      val argSeq = c.Expr[Seq[Any]](Apply(Select(reify{Seq}.tree, TermName("apply")), args.map(_.tree).toList))
-      c.Expr(q"RawSQL($fc, ${c.prefix.tree}, Seq(..$args))")
-    }
-    catch {
-      case e:Exception =>
-        e.printStackTrace()
-        throw e
-    }
+    q"InputFrame(${fc(c)}, $in)"
   }
 
+  def mSQL(c:Context)(args:c.Tree*) = {
+    import c.universe._
+    q"RawSQL(${fc(c)}, ${c.prefix.tree}, Seq(..$args))"
+  }
+
+  def fc(c:Context) = new MacroHelper[c.type](c).createFContext
 
   def mAs[A:c.WeakTypeTag](c: Context) = {
     import c.universe._
-    val fc = new MacroHelper[c.type](c).createFContext
-    c.Expr[CastAs[A]](q"CastAs($fc, ${c.prefix})")
+    q"CastAs(${fc(c)}, ${c.prefix.tree})"
   }
 
-  def mFilter[A:c.WeakTypeTag](c:Context)(condition:c.Expr[A => Cond[A]]) = {
+  def mFilter[A:c.WeakTypeTag](c:Context)(condition:c.Tree) = {
     import c.universe._
-    val fc = new MacroHelper[c.type](c).createFContext
-    c.Expr[FilterOp[A]](q"FilterOp($fc, ${c.prefix.tree}, ${condition})")
+    q"FilterOp(${fc(c)}, ${c.prefix.tree}, ${condition})"
   }
 
-  def mSelect[A:c.WeakTypeTag](c:Context)(cols:c.Expr[A => Column[A, _]]*) = {
+  def mSelect[A:c.WeakTypeTag](c:Context)(cols:c.Tree*) = {
     import c.universe._
-    val fc = new MacroHelper[c.type](c).createFContext
-    c.Expr[ProjectOp[A]](q"ProjectOp($fc, ${c.prefix.tree}, Seq(..$cols))")
+    q"ProjectOp(${fc(c)}, ${c.prefix.tree}, Seq(..$cols))"
   }
 
-  def mLimit[A:c.WeakTypeTag](c:Context)(rows:c.Expr[Int]) = {
+  def mLimit[A:c.WeakTypeTag](c:Context)(rows:c.Tree) = {
     import c.universe._
-    val fc = new MacroHelper[c.type](c).createFContext
-    c.Expr[LimitOp[A]](q"LimitOp($fc, ${c.prefix.tree}, ${rows}, 0)")
+    q"LimitOp(${fc(c)}, ${c.prefix.tree}, ${rows}, 0)"
   }
 
-  def mLimitWithOffset[A:c.WeakTypeTag](c:Context)(rows:c.Expr[Int], offset:c.Expr[Int]) = {
+  def mLimitWithOffset[A:c.WeakTypeTag](c:Context)(rows:c.Tree, offset:c.Tree) = {
     import c.universe._
-    val fc = new MacroHelper[c.type](c).createFContext
-    c.Expr[LimitOp[A]](q"LimitOp($fc, ${c.prefix.tree}, ${rows}, ${offset})")
+    q"LimitOp(${fc(c)}, ${c.prefix.tree}, ${rows}, ${offset})"
   }
 
 }
