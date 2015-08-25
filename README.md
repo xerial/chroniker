@@ -15,7 +15,7 @@ def dataCount = nasdaq.size
 // SELECT time, close FROM nasdaq WHERE symbol = 'APPL'
 def appleStock = nasdaq.filter(_.symbol === "APPL").select(_.time, _.close)
 
-// You can use a raw SQL statement as well:
+// You can use a raw SQL statjement as well:
 def appleStockSQL = sql"SELECT time, close FROM nasdaq where symbol = 'APPL'"
 
 // SELECT time, close FROM nasdaq WHERE symbol = 'APPL' LIMIT 10
@@ -41,7 +41,7 @@ Seq("YHOO", "GOOG", "MSFT")).map { company =>
  - Sampling display
     - Interactive mode
  - Split a large query into small ones
-    - Differential computation
+    - Differential computation for time-series data
 
  - Windowing for stream queries
 

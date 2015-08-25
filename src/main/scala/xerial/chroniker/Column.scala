@@ -3,8 +3,8 @@ package xerial.chroniker
 /**
  *
  */
-case class Column[T](name:String)
+case class Column[Table, ColType](name:String)
 {
   // TODO
-  def ===[A](other:A) : Boolean = false
+  def is[A](other:A) : Cond[Table] = _
 }
