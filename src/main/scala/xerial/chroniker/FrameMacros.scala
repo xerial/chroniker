@@ -140,56 +140,6 @@ object FrameMacros
         val _cl = op.splice.getClass
       }
     }
-
-
-    def opGen[A:c.WeakTypeTag, Out](op:c.Expr[_], args:Seq[c.Expr[_]]) = {
-      //val vdef = createVDef[A](op)
-      val fc = createFContext
-
-      // This macro creates NewOp(_fc, _prefix, f)
-      val e = c.Expr[Frame[Out]](
-        Apply(
-          Select(op.tree, TermName("apply")),
-          List(
-            Ident(TermName("_fc")),
-            Ident(TermName("_prefix"))
-          ) ++ args.map(_.tree).toList
-        )
-      )
-      // Wrap with a block to hide the above variable definitions from the outer context
-      reify {
-        {
-          val _prefix = c.prefix.splice.asInstanceOf[Frame[A]]
-          val _fc = fc.splice
-          val _cl = op.splice.getClass
-          e.splice
-        }
-      }
-    }
-
-    def opSingleGen[A:c.WeakTypeTag, Out](op:c.Expr[_], args:Seq[c.Expr[_]]) = {
-      val fc = createFContext
-      // This macro creates NewOp(_fc, _prefix, f)
-      val e = c.Expr[Single[Out]](
-        Apply(
-          Select(op.tree, TermName("apply")),
-          List(
-            Ident(TermName("_fc")),
-            Ident(TermName("_prefix"))
-          ) ++ args.map(_.tree).toList
-        )
-      )
-      // Wrap with a block to hide the above variable definitions from the outer context
-      reify {
-        {
-          val _prefix = c.prefix.splice.asInstanceOf[Single[A]]
-          val _fc = fc.splice
-          val _cl = op.splice.getClass
-          e.splice
-        }
-      }
-    }
-
   }
 
   /**
