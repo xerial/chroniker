@@ -13,7 +13,7 @@ import sampledb._
 def dataCount = nasdaq.size
 
 // SELECT time, close FROM nasdaq WHERE symbol = 'APPL'
-def appleStock = nasdaq.filter(_.symbol === "APPL").select(_.time, _.close)
+def appleStock = nasdaq.filter(_.symbol is "APPL").select(_.time, _.close)
 
 // You can use a raw SQL statjement as well:
 def appleStockSQL = sql"SELECT time, close FROM nasdaq where symbol = 'APPL'"
@@ -25,7 +25,7 @@ appleStock.limit(10).print
 appleStock.between("2015-05-01", "2015-06-01")
 
 Seq("YHOO", "GOOG", "MSFT")).map { company =>
-   company -> nasdaq.filter(_.symbol == company).select(_.time, _.close)
+   company -> nasdaq.filter(_.symbol is company).select(_.time, _.close)
 }
 ```
 

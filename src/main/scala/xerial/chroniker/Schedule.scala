@@ -1,6 +1,5 @@
 package xerial.chroniker
 
-trait Schedule
 
 case class RecurringSchedule(since:Option[_], until:Option[_], ) extends Schedule
 case class FixedSchedule extends Schedule
@@ -14,6 +13,11 @@ object Year extends DateUnit
 
 case class Repeat(duration:Int, unit:DateUnit)
 case class RepeatInWeek()
+
+class Schedule {
+
+  def +(other:Schedule) : Schedule = _
+}
 
 /**
  *
@@ -43,7 +47,7 @@ object Schedule
   def lastMonth = _
   def lastWeek = _
   def yesterday = _
-  def today = _
+  def today : Schedule = _
   def tomorrow = _
   def nextWeek = _
   def nextMonth = _
