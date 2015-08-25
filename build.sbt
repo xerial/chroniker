@@ -4,5 +4,8 @@ organization := "org.xerial"
 scalaVersion := "2.11.7"
 
 libraryDependencies ++= Seq(
-  "com.github.nscala-time" %% "nscala-time" % "2.0.0"
+  "com.github.nscala-time" %% "nscala-time" % "2.0.0",
+  "org.scala-lang" % "scalap" % scalaVersion.value,
+  "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+  "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )

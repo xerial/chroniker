@@ -24,9 +24,10 @@ appleStock.limit(10).print
 // time-column based filtering
 appleStock.between("2015-05-01", "2015-06-01")
 
-Seq("YHOO", "GOOG", "MSFT")).map { company =>
-   company -> nasdaq.filter(_.symbol is company).select(_.time, _.close)
+for(company <- Seq("YHOO", "GOOG", "MSFT")) yield {
+  nasdaq.filter(_.symbol is company).selectAll
 }
+
 ```
 
 ## Milestones

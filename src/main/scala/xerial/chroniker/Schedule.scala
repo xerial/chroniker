@@ -1,8 +1,21 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package xerial.chroniker
 
 
-case class RecurringSchedule(since:Option[_], until:Option[_], ) extends Schedule
-case class FixedSchedule extends Schedule
+case class RecurringSchedule(since:Option[Schedule], until:Option[Schedule]) extends Schedule
+case class FixedSchedule() extends Schedule
 
 trait DateUnit
 object Hour extends DateUnit
@@ -15,8 +28,7 @@ case class Repeat(duration:Int, unit:DateUnit)
 case class RepeatInWeek()
 
 class Schedule {
-
-  def +(other:Schedule) : Schedule = _
+  def +(other:Schedule) : Schedule = null
 }
 
 /**
@@ -30,28 +42,28 @@ object Schedule
 
   def everyHour = Repeat(1, Hour)
   def everyDay = Repeat(1, Day)
-  def everyWeekDay = _
+  def everyWeekDay = UNDEFINED
   def everyWeek = Repeat(1, Week)
   def everyMonth = Repeat(1, Month)
   def everyYear = Repeat(1, Year)
 
-  def every(d:Day*) = _
+  def every(d:Day*) = UNDEFINED
 
-  def endOfHour = _
-  def endOfDay = _
-  def endOfWeek = _
-  def endOfMonth = _
-  def endOfYear = _
+  def endOfHour = UNDEFINED
+  def endOfDay = UNDEFINED
+  def endOfWeek = UNDEFINED
+  def endOfMonth = UNDEFINED
+  def endOfYear = UNDEFINED
 
-  def lastYear = _
-  def lastMonth = _
-  def lastWeek = _
-  def yesterday = _
-  def today : Schedule = _
-  def tomorrow = _
-  def nextWeek = _
-  def nextMonth = _
-  def nextYear = _
+  def lastYear = UNDEFINED
+  def lastMonth = UNDEFINED
+  def lastWeek = UNDEFINED
+  def yesterday = UNDEFINED
+  def today : Schedule = UNDEFINED
+  def tomorrow = UNDEFINED
+  def nextWeek = UNDEFINED
+  def nextMonth = UNDEFINED
+  def nextYear = UNDEFINED
 
   sealed trait CalendarDate
 

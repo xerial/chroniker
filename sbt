@@ -195,7 +195,7 @@ default_jvm_opts () {
   if [[ $v -ge 8 ]]; then
     echo "$default_jvm_opts_common"
   else
-    echo "-XX:MaxPermSize=384m $default_jvm_opts_common"
+    echo "$default_jvm_opts_common"
   fi
 }
 
