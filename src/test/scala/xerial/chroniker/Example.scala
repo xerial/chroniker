@@ -18,6 +18,8 @@ object sample_dataset
 {
   class Nasdaq extends Frame[Nasdaq]
   {
+    def input = null
+
     val time = Column[Nasdaq, Long]("time")
     val symbol = Column[Nasdaq, String]("symbol")
     val open = Column[Nasdaq, Double]("open")
@@ -49,7 +51,6 @@ object Example
 
   // SELECT time, close FROM nasdaq WHERE symbol = 'APPL' LIMIT 10
   appleStock.limit(10).print
-
   appleStockSQL.limit(5).print
 
   // time-column based filtering
@@ -60,17 +61,13 @@ object Example
       nasdaq.filter(_.symbol is company).selectAll
     }
   }
-
 }
 
 object RunnerExample {
 
   val td = new TDExecutor
-
   //Example.recentAppleStock(today).run(td)
-
 }
-
 
 class Example extends WordSpec {
   import Example._
@@ -78,7 +75,6 @@ class Example extends WordSpec {
   "Example" should {
     println(from(Seq(1, 2, 3)))
     println(appleStockSQL)
-
-
+    println(appleStock)
   }
 }

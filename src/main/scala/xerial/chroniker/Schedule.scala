@@ -42,28 +42,28 @@ object Schedule
 
   def everyHour = Repeat(1, Hour)
   def everyDay = Repeat(1, Day)
-  def everyWeekDay = UNDEFINED
+  def everyWeekDay = throw UNDEFINED
   def everyWeek = Repeat(1, Week)
   def everyMonth = Repeat(1, Month)
   def everyYear = Repeat(1, Year)
 
-  def every(d:Day*) = UNDEFINED
+  def every(d:Day*) = throw UNDEFINED
 
-  def endOfHour = UNDEFINED
-  def endOfDay = UNDEFINED
-  def endOfWeek = UNDEFINED
-  def endOfMonth = UNDEFINED
-  def endOfYear = UNDEFINED
+  def endOfHour = throw UNDEFINED
+  def endOfDay = throw UNDEFINED
+  def endOfWeek = throw UNDEFINED
+  def endOfMonth = throw UNDEFINED
+  def endOfYear = throw UNDEFINED
 
-  def lastYear = UNDEFINED
-  def lastMonth = UNDEFINED
-  def lastWeek = UNDEFINED
-  def yesterday = UNDEFINED
-  def today : Schedule = UNDEFINED
-  def tomorrow = UNDEFINED
-  def nextWeek = UNDEFINED
-  def nextMonth = UNDEFINED
-  def nextYear = UNDEFINED
+  def lastYear = throw UNDEFINED
+  def lastMonth = throw UNDEFINED
+  def lastWeek = throw UNDEFINED
+  def yesterday = throw UNDEFINED
+  def today : Schedule = throw UNDEFINED
+  def tomorrow = throw UNDEFINED
+  def nextWeek = throw UNDEFINED
+  def nextMonth = throw UNDEFINED
+  def nextYear = throw UNDEFINED
 
   sealed trait CalendarDate
 

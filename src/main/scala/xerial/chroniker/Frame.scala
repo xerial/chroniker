@@ -19,15 +19,17 @@ import FrameMacros._
 /**
  *
  */
-class Frame[A] {
+trait Frame[A] {
 
-  def limit(rows:Int) : Frame[A] = limit(rows, 0)
-  def limit(rows:Int, offset:Int) : Frame[A] = LimitOp(this, rows, offset)
+  def input : Frame[_]
+
+  def limit(rows:Int) : Frame[A] = macro mLimit[A]
+  def limit(rows:Int, offset:Int) : Frame[A] = macro mLimitWithOffset[A]
 
   def select1 : Option[Single[A]] = null
-  def select(col1: (A => Column[A, _])*) : Frame[A] = null
+  def select(cols: (A => Column[A, _])*) : Frame[A] = macro mSelect[A]
   def selectAll : Frame[A] = null
-  def filter(condition:A => Cond[A]) : Frame[A] = null
+  def filter(condition:A => Cond[A]) : Frame[A] = macro mFilter[A]
 
   def orderBy() : Frame[A] = null
 
@@ -41,12 +43,45 @@ class Frame[A] {
 
   def run(implicit executor:Executor) = null
 
+//  override def toString = {
+//    toString(0)
+//  }
+//
+//  def toString(indentLevel:Int) : String = {
+//    val s = new StringBuilder
+//    s.append(this.getClass.getSimpleName)
+//    s.append("\n")
+//    this match {
+//      case p:Product =>
+//        val indent = (0 until indentLevel).map(_ => " ").mkString
+//        val st = for(param <- p.productIterator) yield {
+//          param match {
+//            case f: Frame[_] => f.toString(indentLevel + 1)
+//            case other => s"${indent}- ${other}"
+//          }
+//        }
+//        s.append(st.mkString("\n"))
+//      case _ =>
+//    }
+//    s.result()
+//  }
+//
+
 }
 
 
-case class InputFrame[A](context:FContext, input:Seq[A]) extends Frame[A]
-case class FrameRef[A](context:FContext) extends Frame[A]
-case class RawSQL(context:FContext, sc:Any, args:Seq[Any]) extends Frame[Any]
+case class InputFrame[A](context:FContext, data:Seq[A]) extends Frame[A] {
+  def input = null
+}
+case class FrameRef[A](context:FContext) extends Frame[A] {
+  def input = null
+}
+
+case class RawSQL(context:FContext, sc:Any, args:Seq[Any]) extends Frame[Any] {
+  // FIXME to track dependencies
+  def input = null
+}
+
 case class CastAs[A](context:FContext, input:Frame[_]) extends Frame[A]
 
 /**
@@ -67,9 +102,9 @@ trait Cond[A]
 //case class Eq[A](other:Col[_]) extends Cond[A]
 //case class EqExpr[A](cond:Col[A] => Boolean) extends Cond[A]
 
-
-case class LimitOp[A](input:Frame[A], rows:Int, offset:Int) extends Frame[A]
-case class FilterOp[A](input:Frame[A], cond:A => Boolean) extends Frame[A]
+case class LimitOp[A](context:FContext, input:Frame[A], rows:Int, offset:Int) extends Frame[A]
+case class FilterOp[A](context:FContext, input:Frame[A], cond:A => Cond[A]) extends Frame[A]
+case class ProjectOp[A](context:FContext, input:Frame[A], col:Seq[A => Column[A, _]]) extends Frame[A]
 
 object SQLHelper {
 

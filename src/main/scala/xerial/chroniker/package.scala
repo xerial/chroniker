@@ -25,10 +25,10 @@ package object chroniker
     def sql(args:Any*) : RawSQL = macro mSQL
   }
 
-  val UNDEFINED = throw new UnsupportedOperationException("undefined")
+  val UNDEFINED = new UnsupportedOperationException("undefined")
 
   implicit class Duration(n:Int) {
-    def month : Schedule = UNDEFINED // TODO
+    def month : Schedule = throw UNDEFINED // TODO
 
   }
 
