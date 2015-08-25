@@ -18,7 +18,7 @@ object sample_dataset
 {
   class Nasdaq extends Frame[Nasdaq]
   {
-    def input = null
+    def inputs = Seq.empty
 
     val time = Column[Nasdaq, Long]("time")
     val symbol = Column[Nasdaq, String]("symbol")

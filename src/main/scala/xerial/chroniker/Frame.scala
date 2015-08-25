@@ -21,7 +21,7 @@ import FrameMacros._
  */
 trait Frame[A] {
 
-  def input : Frame[_]
+  def inputs : Seq[Frame[_]]
 
   def limit(rows:Int) : Frame[A] = macro mLimit[A]
   def limit(rows:Int, offset:Int) : Frame[A] = macro mLimitWithOffset[A]
@@ -71,18 +71,20 @@ trait Frame[A] {
 
 
 case class InputFrame[A](context:FContext, data:Seq[A]) extends Frame[A] {
-  def input = null
+  def inputs = Seq.empty
 }
 case class FrameRef[A](context:FContext) extends Frame[A] {
-  def input = null
+  def inputs = Seq.empty
 }
 
 case class RawSQL(context:FContext, sc:Any, args:Seq[Any]) extends Frame[Any] {
   // FIXME to track dependencies
-  def input = null
+  def inputs = args.collect{case f:Frame[_] => f}
 }
 
-case class CastAs[A](context:FContext, input:Frame[_]) extends Frame[A]
+case class CastAs[A](context:FContext, input:Frame[_]) extends Frame[A] {
+  def inputs = Seq(input)
+}
 
 /**
  *
@@ -102,9 +104,15 @@ trait Cond[A]
 //case class Eq[A](other:Col[_]) extends Cond[A]
 //case class EqExpr[A](cond:Col[A] => Boolean) extends Cond[A]
 
-case class LimitOp[A](context:FContext, input:Frame[A], rows:Int, offset:Int) extends Frame[A]
-case class FilterOp[A](context:FContext, input:Frame[A], cond:A => Cond[A]) extends Frame[A]
-case class ProjectOp[A](context:FContext, input:Frame[A], col:Seq[A => Column[A, _]]) extends Frame[A]
+case class LimitOp[A](context:FContext, input:Frame[A], rows:Int, offset:Int) extends Frame[A] {
+  def inputs = Seq(input)
+}
+case class FilterOp[A](context:FContext, input:Frame[A], cond:A => Cond[A]) extends Frame[A] {
+  def inputs = Seq(input)
+}
+case class ProjectOp[A](context:FContext, input:Frame[A], col:Seq[A => Column[A, _]]) extends Frame[A] {
+  def inputs = Seq(input)
+}
 
 object SQLHelper {
 
