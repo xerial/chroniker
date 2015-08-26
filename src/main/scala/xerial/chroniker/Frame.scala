@@ -72,6 +72,8 @@ trait Frame[A] {
     }
   }
 
+  def name = this.getClass.getSimpleName
+
   override def toString = {
     new FrameFormatter().format(this).result
   }
@@ -95,7 +97,7 @@ class FrameFormatter {
 
   def format(frame:Frame[_], indentLevel:Int = 0): FrameFormatter = {
     if(frame != null) {
-      out.println(s"${indent(indentLevel)}[${frame.getClass.getSimpleName}] ${frame.summary}")
+      out.println(s"${indent(indentLevel)}[${frame.name}] ${frame.summary}")
       if(frame.context != FContext.empty) {
         out.println(s"${indent(indentLevel+1)}context: ${frame.context}")
       }
@@ -123,6 +125,7 @@ trait RootFrame[A] extends Frame[A] {
 
 case class Knot[A](context:FContext, inputs:Seq[Frame[_]], output:Frame[A]) extends Frame[A]  {
   def summary = output.summary
+  override def name = output.name
 }
 
 case class InputFrame[A](context:FContext, data:Seq[A]) extends Frame[A] {
