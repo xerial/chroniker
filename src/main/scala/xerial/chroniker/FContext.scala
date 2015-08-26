@@ -50,9 +50,11 @@ case class FContext(owner: Class[_],
   }
 
   override def toString = {
-    val method = if (name == "<constructor>") "" else s".$name"
-    val lv = localValName.map(x => s":$x") getOrElse ""
-    s"${baseTrait.getSimpleName}${method}${lv} (parent:${parentValName.getOrElse(None)}) (L$line:$column)"
+    val className = baseTrait.getSimpleName.replaceAll("\\$", "")
+    val method = if (name == "<constructor>") "" else s".${name}"
+    val targetName = localValName.filter(_ != name).map(lv => s"${method}:${lv}").getOrElse(method)
+    val parentStr = if(parentValName.isDefined) s" (parent:${parentValName}) " else ""
+    s"${className}${targetName}${parentStr} [L$line:$column]"
   }
 
   def refID: String = {

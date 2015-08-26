@@ -57,11 +57,14 @@ object Example {
     }
   }
 
-  def cleanUpTable = sql"DROP TABLE IF EXISTS A"
-  def createTable = sql"CREATE TABLE A" dependsOn cleanUpTable
-  def prepareDataset = sql"INSERT INTO A SELECT * FROM sample where time > '2015-08-26'" dependsOn createTable
+  def cleanUpTable(name:String) = sql"DROP TABLE IF EXISTS ${name}"
+  def createTableA = sql"CREATE TABLE A" dependsOn cleanUpTable("A")
+  def datasetA = sql"INSERT INTO A SELECT * FROM sample where time > '2015-08-26'" dependsOn createTableA
 
+  def createTableB = sql"CREATE TABLE B" dependsOn cleanUpTable("B")
+  def datasetB = sql"INSERT INTO B SELECT * FROM stats limit 100" dependsOn createTableB
 
+  def join = sql"SELECT * FROM ${datasetA} a, ${datasetB} b WHERE a.id = b.id"
 }
 
 object RunnerExample {
@@ -86,7 +89,7 @@ class Example extends WordSpec {
     for (in <- appleStockSQL.inputs) {
       println(s"input: " + in)
     }
-    println(prepareDataset)
+    println(join)
 
   }
 }

@@ -95,8 +95,10 @@ class FrameFormatter {
 
   def format(frame:Frame[_], indentLevel:Int = 0): FrameFormatter = {
     if(frame != null) {
-      out.println(s"${indent(indentLevel)}- ${frame.getClass.getSimpleName}:${frame.summary}")
-      out.println(s"${indent(indentLevel+1)} @${frame.context}")
+      out.println(s"${indent(indentLevel)}[${frame.getClass.getSimpleName}] ${frame.summary}")
+      if(frame.context != FContext.empty) {
+        out.println(s"${indent(indentLevel+1)}context: ${frame.context}")
+      }
       if(!frame.inputs.isEmpty) {
         out.println(s"${indent(indentLevel+1)}inputs:")
       }
@@ -137,14 +139,7 @@ case class RawSQL(context:FContext, sc:SqlContext, args:Seq[Any]) extends Frame[
   def summary = templateString(sc.sc)
 
   private def templateString(sc:StringContext) = {
-    val b = new StringBuilder
-    for(p <- sc.parts) {
-      b.append(p)
-      if(!args.isEmpty) {
-        b.append("${}")
-      }
-    }
-    b.result()
+    sc.parts.mkString("{}")
   }
 }
 
