@@ -13,29 +13,65 @@
  */
 package xerial.chroniker
 
-import scala.reflect.macros.blackbox.Context
 import scala.language.existentials
 import scala.language.experimental.macros
+import scala.reflect.macros.blackbox.Context
 import scala.reflect.runtime.{universe => ru}
-
-import scala.language.experimental.macros
 
 /**
  *
  */
-object FrameMacros
-{
+object FrameMacros {
+  /**
+   * Generating a new InputFrame[A] from Seq[A]
+   * @return
+   */
+  def mNewFrame[A: c.WeakTypeTag](c: Context)(in: c.Expr[Seq[A]]) = {
+    import c.universe._
+    q"InputFrame(${fc(c)}, $in)"
+  }
 
-  class MacroHelper[C <: Context](val c: C)
-  {
+  def mSQL(c: Context)(args: c.Tree*) = {
+    import c.universe._
+    q"RawSQL(${fc(c)}, ${c.prefix.tree}, Seq(..$args))"
+  }
+
+  def fc(c: Context) = new MacroHelper[c.type](c).createFContext
+
+  def mAs[A: c.WeakTypeTag](c: Context) = {
+    import c.universe._
+    q"CastAs(${fc(c)}, ${c.prefix.tree})"
+  }
+
+  def mFilter[A: c.WeakTypeTag](c: Context)(condition: c.Tree) = {
+    import c.universe._
+    q"FilterOp(${fc(c)}, ${c.prefix.tree}, ${condition})"
+  }
+
+  def mSelect[A: c.WeakTypeTag](c: Context)(cols: c.Tree*) = {
+    import c.universe._
+    q"ProjectOp(${fc(c)}, ${c.prefix.tree}, Seq(..$cols))"
+  }
+
+  def mLimit[A: c.WeakTypeTag](c: Context)(rows: c.Tree) = {
+    import c.universe._
+    q"LimitOp(${fc(c)}, ${c.prefix.tree}, ${rows}, 0)"
+  }
+
+  def mLimitWithOffset[A: c.WeakTypeTag](c: Context)(rows: c.Tree, offset: c.Tree) = {
+    import c.universe._
+    q"LimitOp(${fc(c)}, ${c.prefix.tree}, ${rows}, ${offset})"
+  }
+
+  class MacroHelper[C <: Context](val c: C) {
+
     import c.universe._
 
     /**
      * Find a function/variable/class context where the expression is used
      * @return
      */
-    def createFContext: c.Expr[FContext] =
-    {
+    def createFContext: c.Expr[FContext] = {
       // Find the enclosing method.
       val m = c.enclosingMethod
       val methodName = m match {
@@ -81,16 +117,14 @@ object FrameMacros
     }
 
     // Find a target variable of the operation result by scanning closest ValDefs
-    def findValDef: List[ValOrDefDef] =
-    {
+    def findValDef: List[ValOrDefDef] = {
 
       def print(p: c.Position) = s"${p.line}(${p.column})"
 
       val prefixPos = c.prefix.tree.pos
 
       class Finder
-              extends Traverser
-      {
+        extends Traverser {
 
         var enclosingDef: List[ValOrDefDef] = List.empty
         var cursor: c.Position = null
@@ -98,10 +132,10 @@ object FrameMacros
         private def contains(p: c.Position, start: c.Position, end: c.Position) =
           start.precedes(p) && p.precedes(end)
 
-        override def traverse(tree: Tree): Unit =
-        {
-          if (tree.pos.isDefined)
+        override def traverse(tree: Tree): Unit = {
+          if (tree.pos.isDefined) {
             cursor = tree.pos
+          }
           tree match {
             // Check whether the rhs of variable definition contains the prefix expression
             case vd@ValDef(mod, varName, tpt, rhs) =>
@@ -121,18 +155,18 @@ object FrameMacros
       }
 
       val f = new
-                      Finder()
+          Finder()
       val m = c.enclosingMethod
       if (m == null) {
         f.traverse(c.enclosingClass)
       }
-      else
+      else {
         f.traverse(m)
+      }
       f.enclosingDef.reverse
     }
 
-    def createVDef[A: c.WeakTypeTag](op: c.Expr[_]) =
-    {
+    def createVDef[A: c.WeakTypeTag](op: c.Expr[_]) = {
       val fc = createFContext
       reify {
         val _prefix = c.prefix.splice.asInstanceOf[Frame[A]]
@@ -140,47 +174,6 @@ object FrameMacros
         val _cl = op.splice.getClass
       }
     }
-  }
-
-  /**
-   * Generating a new InputFrame[A] from Seq[A]
-   * @return
-   */
-  def mNewFrame[A:c.WeakTypeTag](c: Context)(in: c.Expr[Seq[A]]) = {
-    import c.universe._
-    q"InputFrame(${fc(c)}, $in)"
-  }
-
-  def mSQL(c:Context)(args:c.Tree*) = {
-    import c.universe._
-    q"RawSQL(${fc(c)}, ${c.prefix.tree}, Seq(..$args))"
-  }
-
-  def fc(c:Context) = new MacroHelper[c.type](c).createFContext
-
-  def mAs[A:c.WeakTypeTag](c: Context) = {
-    import c.universe._
-    q"CastAs(${fc(c)}, ${c.prefix.tree})"
-  }
-
-  def mFilter[A:c.WeakTypeTag](c:Context)(condition:c.Tree) = {
-    import c.universe._
-    q"FilterOp(${fc(c)}, ${c.prefix.tree}, ${condition})"
-  }
-
-  def mSelect[A:c.WeakTypeTag](c:Context)(cols:c.Tree*) = {
-    import c.universe._
-    q"ProjectOp(${fc(c)}, ${c.prefix.tree}, Seq(..$cols))"
-  }
-
-  def mLimit[A:c.WeakTypeTag](c:Context)(rows:c.Tree) = {
-    import c.universe._
-    q"LimitOp(${fc(c)}, ${c.prefix.tree}, ${rows}, 0)"
-  }
-
-  def mLimitWithOffset[A:c.WeakTypeTag](c:Context)(rows:c.Tree, offset:c.Tree) = {
-    import c.universe._
-    q"LimitOp(${fc(c)}, ${c.prefix.tree}, ${rows}, ${offset})"
   }
 
 }
