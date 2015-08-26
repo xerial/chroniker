@@ -13,34 +13,44 @@
  */
 package xerial.chroniker
 
+object FContext {
 
-case class FContext(owner: Class[_], name: String, localValName: Option[String], parentValName:Option[String], source:String, line:Int, column:Int) {
+  val empty = new FContext(this.getClass, "none", None, None, "unknown", 1, 0);
 
-  def baseTrait : Class[_] = {
+}
+
+
+case class FContext(owner: Class[_],
+                    name: String, localValName: Option[String], parentValName: Option[String], source: String, line: Int,
+                    column: Int) {
+
+  def baseTrait: Class[_] = {
 
     // If the class name contains $anonfun, it is a compiler generated class.
     // If it contains $anon, it is a mixed-in trait
     val isAnonFun = owner.getSimpleName.contains("$anon")
-    if(!isAnonFun)
+    if (!isAnonFun) {
       owner
+    }
     else {
       // If the owner is a mix-in class
       owner.getInterfaces.headOption orElse
-              Option(owner.getSuperclass) getOrElse
-              owner
+        Option(owner.getSuperclass) getOrElse
+        owner
     }
   }
 
-
-  private def format(op:Option[String]) = {
-    if(op.isDefined)
+  private def format(op: Option[String]) = {
+    if (op.isDefined) {
       s"${op.get}:"
-    else
+    }
+    else {
       ""
+    }
   }
 
   override def toString = {
-    val method = if(name == "<constructor>") "" else s".$name"
+    val method = if (name == "<constructor>") "" else s".$name"
     val lv = localValName.map(x => s":$x") getOrElse ""
     s"${baseTrait.getSimpleName}${method}${lv} (parent:${parentValName.getOrElse(None)}) (L$line:$column)"
   }
