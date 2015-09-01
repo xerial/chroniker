@@ -30,7 +30,9 @@ case class RepeatInWeek()
 class Schedule {
   def +(other:Schedule) : Schedule = null
 }
+class Duration {
 
+}
 /**
  *
  */

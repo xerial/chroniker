@@ -28,20 +28,15 @@ package object chroniker
     def sql(args:Any*) : RawSQL = macro mSQL
   }
 
-  private[chroniker] val UNDEFINED = new UnsupportedOperationException("undefined")
+  private[chroniker] val UNDEFINED : Nothing = throw new UnsupportedOperationException("undefined")
 
   implicit class Duration(n:Int) {
-    def month : Schedule = throw UNDEFINED // TODO
-
+    def month : Duration = UNDEFINED
+    def seconds : Duration = UNDEFINED
   }
 
   def from[A](in:Seq[A]) : InputFrame[A] = macro mNewFrame[A]
   def fromFile[A](in:File) : FileInput[A] = macro mFileInput[A]
-
-
-
-  def create[A]
-
 
 }
 

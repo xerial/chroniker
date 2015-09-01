@@ -13,14 +13,39 @@
  */
 package xerial.chroniker.example
 
+import xerial.chroniker
+import xerial.chroniker.{RootFrame, Column}
+import chroniker._
+
+class Tweet extends RootFrame[Tweet] {
+  val retweetCount = Column[Tweet, Long]("count")
+  val timeZone = Column[Tweet, String]("timezone")
+}
+
 /**
  *
  */
 class StreamExample {
 
+  def tweet = new Tweet
+
   // event time, processing time difference
 
+  def last5Tweets =
+    tweet
+      .fixedSize(5)
+      .filter(_.retweetCount >= 10).sum(_.retweetCount)
 
+  def slidingWindowOf60sec =
+    tweet
+      .fixedDuration(60 seconds)
+      .aggregate(_.retweetCount.max, _.retweetCount.min, _.retweetCount.avg)
+
+  def groupByTimeZone =
+    tweet
+     .fixedDuration(30 seconds)
+     .aggregate(_.timeZone)
+     .select(_.timeZone, _.retweetCount.sum)
 
 
 

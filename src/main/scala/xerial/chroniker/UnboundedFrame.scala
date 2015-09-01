@@ -18,19 +18,5 @@ package xerial.chroniker
  */
 trait UnboundedFrame[A <: Frame[_]] extends Frame[A] {
 
-  /**
-   * Generates non-overlapping windows of a fixed window
-   * @param windowSize
-   */
-  def fixed(windowSize:Duration) : UnboundedFrame[A]
-
-  /**
-   * Generates sliding windows that allows overlaps and having a given size of gap (step) between each window
-   * @param windowSize
-   * @param step
-   * @return
-   */
-  def sliding(windowSize:Duration, step:Duration) : UnboundedFrame[A]
-
 
 }

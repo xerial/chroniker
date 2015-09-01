@@ -29,6 +29,10 @@ trait Frame[A <: Frame[_]] {
 
   def context: FContext
   def inputs : Seq[Frame[_]]
+  def summary : String
+
+  def name = this.getClass.getSimpleName
+  override def toString = new FrameFormatter().format(this).result
 
   def limit(rows:Int) : Frame[A] = macro mLimit[A]
   def limit(rows:Int, offset:Int) : Frame[A] = macro mLimitWithOffset[A]
@@ -73,14 +77,37 @@ trait Frame[A <: Frame[_]] {
     }
   }
 
-  def name = this.getClass.getSimpleName
+  def unionAll(other:Frame[A]) : Frame[A] = UNDEFINED
+  def union(other:Frame[A]) : Frame[A] = UNDEFINED
+  def merge(other:Frame[A]) : Frame[A] = UNDEFINED
 
-  override def toString = {
-    new FrameFormatter().format(this).result
-  }
 
-  def summary : String
+  // numeric operations
+  def sum[C](col: A => Column[A, C])(implicit tpe: Numeric[C]) : Single[Int] = UNDEFINED
+
+  /**
+   * Generates non-overlapping windows of a fixed window
+   * @param windowSize
+   */
+  def fixedDuration(windowSize:Duration) : Frame[A] = UNDEFINED
+
+  /**
+   * Generates sliding windows that allows overlaps and having a given size of gap (step) between each window
+   * @param windowSize
+   * @param step
+   * @return
+   */
+  def sliding(windowSize:Duration, step:Duration) : Frame[A] = UNDEFINED
+
+  def fixedSize(numItem:Int) : Frame[A] = UNDEFINED
+
+
+  def aggregate(col:(A => Column[_, _])*) : Frame[A] = UNDEFINED
+  def groupBy(col:(A=>Column[A, _])*) : Frame[_] = UNDEFINED
 }
+
+
+
 
 object Frame {
 
@@ -164,9 +191,20 @@ case class CastAs[A](context:FContext, input:Frame[_]) extends Frame[A] {
 case class Column[Table, ColType](name:String)
 {
   // TODO
-  def is[A](other:A) : Cond[Table] = null
+  def is[A](other:A) : Cond[Table] = UNDEFINED
+  def >(v:Int) : Cond[Table] = UNDEFINED
+  def >=(v:Int) : Cond[Table] = UNDEFINED
+  def <(v:Int) : Cond[Table] = UNDEFINED
+  def <=(v:Int) : Cond[Table] = UNDEFINED
 
   def as(newAlias:String) : Column[Table, ColType] = null
+
+  // Column aggregation operation
+  def min : Column[_, Int] = UNDEFINED
+  def max : Column[_, Int] = UNDEFINED
+  def avg : Column[_, Int] = UNDEFINED
+  def sum : Column[_, Int] = UNDEFINED
+
 
 }
 
