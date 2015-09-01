@@ -13,7 +13,7 @@
  */
 package xerial.chroniker
 
-import java.io.{StringWriter, PrintWriter}
+import java.io.{File, StringWriter, PrintWriter}
 
 import xerial.lens.ObjectSchema
 
@@ -21,10 +21,11 @@ import scala.language.experimental.macros
 
 import FrameMacros._
 
+
 /**
  *
  */
-trait Frame[A] {
+trait Frame[A <: Frame[_]] {
 
   def context: FContext
   def inputs : Seq[Frame[_]]
@@ -45,7 +46,7 @@ trait Frame[A] {
 
   def between(from:Schedule, to:Schedule) : Frame[A] = null
 
-  def as[A] : Frame[A] = macro mAs[A]
+  def as[B] : Frame[B] = macro mAs[B]
 
   def run(implicit executor:Executor) = null
 
@@ -132,6 +133,12 @@ case class InputFrame[A](context:FContext, data:Seq[A]) extends Frame[A] {
   def inputs = Seq.empty
   def summary = data.toString
 }
+
+case class FileInput[A](context:FContext, file:File) extends Frame[A] {
+  def inputs = Seq.empty
+  def summary = s"file: ${file.getPath}"
+}
+
 case class FrameRef[A](context:FContext) extends Frame[A] {
   def inputs = Seq.empty
   def summary = "frame ref"

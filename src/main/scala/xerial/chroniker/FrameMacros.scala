@@ -13,6 +13,8 @@
  */
 package xerial.chroniker
 
+import java.io.File
+
 import scala.language.existentials
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox.Context
@@ -29,6 +31,11 @@ object FrameMacros {
   def mNewFrame[A: c.WeakTypeTag](c: Context)(in: c.Expr[Seq[A]]) = {
     import c.universe._
     q"InputFrame(${fc(c)}, $in)"
+  }
+
+  def mFileInput[A:c.WeakTypeTag](c:Context)(in:c.Expr[File[A]]) = {
+    import c.universe._
+    q"FileInput(${fc(c)}, $in})"
   }
 
   def mSQL(c: Context)(args: c.Tree*) = {

@@ -11,38 +11,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xerial
-
-import java.io.File
-
-import scala.language.experimental.macros
+package xerial.chroniker.example
 
 /**
  *
  */
-package object chroniker
-{
-  import FrameMacros._
+class StreamExample {
 
-  implicit class SqlContext(val sc:StringContext) extends AnyVal {
-    def sql(args:Any*) : RawSQL = macro mSQL
-  }
-
-  private[chroniker] val UNDEFINED = new UnsupportedOperationException("undefined")
-
-  implicit class Duration(n:Int) {
-    def month : Schedule = throw UNDEFINED // TODO
-
-  }
-
-  def from[A](in:Seq[A]) : InputFrame[A] = macro mNewFrame[A]
-  def fromFile[A](in:File) : FileInput[A] = macro mFileInput[A]
+  // event time, processing time difference
 
 
 
-  def create[A]
 
 
 }
-
-

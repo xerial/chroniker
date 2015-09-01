@@ -11,38 +11,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xerial
-
-import java.io.File
-
-import scala.language.experimental.macros
+package xerial.chroniker
 
 /**
  *
  */
-package object chroniker
-{
-  import FrameMacros._
+trait UnboundedFrame[A <: Frame[_]] extends Frame[A] {
 
-  implicit class SqlContext(val sc:StringContext) extends AnyVal {
-    def sql(args:Any*) : RawSQL = macro mSQL
-  }
+  /**
+   * Generates non-overlapping windows of a fixed window
+   * @param windowSize
+   */
+  def fixed(windowSize:Duration) : UnboundedFrame[A]
 
-  private[chroniker] val UNDEFINED = new UnsupportedOperationException("undefined")
-
-  implicit class Duration(n:Int) {
-    def month : Schedule = throw UNDEFINED // TODO
-
-  }
-
-  def from[A](in:Seq[A]) : InputFrame[A] = macro mNewFrame[A]
-  def fromFile[A](in:File) : FileInput[A] = macro mFileInput[A]
-
-
-
-  def create[A]
+  /**
+   * Generates sliding windows that allows overlaps and having a given size of gap (step) between each window
+   * @param windowSize
+   * @param step
+   * @return
+   */
+  def sliding(windowSize:Duration, step:Duration) : UnboundedFrame[A]
 
 
 }
-
-
