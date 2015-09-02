@@ -24,6 +24,12 @@ import scala.reflect.runtime.{universe => ru}
  *
  */
 object FrameMacros {
+
+  def mShellCommand(c: Context)(args: c.Tree*) = {
+    import c.universe._
+    q"ShellCommand(${fc(c)}, ${c.prefix.tree}.sc, Seq(..$args))"
+  }
+
   /**
    * Generating a new InputFrame[A] from Seq[A]
    * @return

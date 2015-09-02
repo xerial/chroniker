@@ -25,7 +25,7 @@ class Tweet extends RootFrame[Tweet] {
 /**
  *
  */
-class StreamExample {
+object StreamExample {
 
   def tweet = new Tweet
 
@@ -49,4 +49,7 @@ class StreamExample {
 
 
 
+
 }
+
+

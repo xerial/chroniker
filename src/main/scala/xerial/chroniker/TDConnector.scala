@@ -13,13 +13,15 @@
  */
 package xerial.chroniker
 
+import xerial.chroniker._
+
 case class TDDatabase(name:String) {
 
-  def createTable(tableName:String) = _
-  def dropTable(tableName:String) = _
-  def existsTable(tableName:String) = _
-  def listTables : Seq[String] = _
-  def getSchema(tableName:String): TDSchema = _
+  def createTable(tableName:String) = UNDEFINED
+  def dropTable(tableName:String) = UNDEFINED
+  def existsTable(tableName:String) = UNDEFINED
+  def listTables : Seq[String] = UNDEFINED
+  def getSchema(tableName:String): TDSchema = UNDEFINED
 }
 
 case class TDSchema(columns:Seq[TDColumn])
@@ -40,10 +42,10 @@ object TDType {
  */
 trait TDConnector {
 
-  def createDatabase(name:String) = _
-  def dropDatabase(name:String) = _
-  def existsDatabase(name:String) = _
-  def listDatabases : Seq[String] = _
+  def createDatabase(name:String) = UNDEFINED
+  def dropDatabase(name:String) = UNDEFINED
+  def existsDatabase(name:String) = UNDEFINED
+  def listDatabases : Seq[String] = UNDEFINED
   def openDatabase[U](database:String)(body: TDDatabase => U) : U = body(TDDatabase(database))
 
 }

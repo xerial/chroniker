@@ -15,6 +15,8 @@ package xerial
 
 import java.io.File
 
+import xerial.chroniker.ShellTask.ShellCommand
+
 import scala.language.experimental.macros
 
 /**
@@ -27,6 +29,11 @@ package object chroniker
   implicit class SqlContext(val sc:StringContext) extends AnyVal {
     def sql(args:Any*) : RawSQL = macro mSQL
   }
+
+  implicit class ShellContext(val sc:StringContext) extends AnyVal {
+    def c(args: Any*) : ShellCommand = macro mShellCommand
+  }
+
 
   private[chroniker] val UNDEFINED : Nothing = throw new UnsupportedOperationException("undefined")
 

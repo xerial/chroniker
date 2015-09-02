@@ -180,6 +180,11 @@ case class RawSQL(context:FContext, sc:SqlContext, args:Seq[Any]) extends Frame[
   }
 }
 
+
+
+
+
+
 case class CastAs[A](context:FContext, input:Frame[_]) extends Frame[A] {
   def inputs = Seq(input)
   def summary = ""
